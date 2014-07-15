@@ -209,8 +209,8 @@ function importV(form){
   Object.keys(map.pot).forEach(function(value, index){
     pot[value] = form[map.pot[value]];
   });
-  if(form['q19_desiredProject']) {
-    pot.cf_755 = form['q19_desiredProject'].year +'-'+ form['q19_desiredProject'].month +'-'+ form['q19_desiredProject'].day;
+  if(form['q19_desiredProject19']) {
+    pot.cf_755 = form['q19_desiredProject19'].year +'-'+ form['q19_desiredProject19'].month +'-'+ form['q19_desiredProject19'].day;
   }
   if(form['q20_preferredMaterial20']) {
     pot.cf_1265 = form['q20_preferredMaterial20'].replace(new RegExp(', ', 'g'), ' |##| ');
