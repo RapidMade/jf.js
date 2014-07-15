@@ -149,7 +149,7 @@ function importW(command, tel) {
       client.doCreate('Potentials', pot, function(e,r,body){
         tel.write('POT created: ' + r.potential_no+'\n')
         try {
-          preamble = '/home/simon/CAD/'+contact.lastname+'/'+r.potential_no+' '+r.potentialname
+          preamble = '/mnt/r/RM Clients/'+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
           fs.mkdirParent(preamble+'/Operations');
           fs.mkdirParent(preamble+'/Operations/CAD Files');
           fs.mkdirParent(preamble+'/Operations/Files from Client');
