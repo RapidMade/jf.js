@@ -6,6 +6,8 @@ var mp           = require('multiparty');
 var telnet       = require('telnet');
 var redis        = require('redis');
 var multiline    = require('multiline');
+var fs           = require('fs');
+var path         = require('path');
 
 rclient = redis.createClient();
 // Some settings
@@ -143,7 +145,28 @@ function importW(command, tel) {
     client.doCreate('Contacts', contact, function(e,r,body){
       tel.write('Contact created: ' + contact.firstname + ' ' + contact.lastname + '\n');
       pot.contact_id = r.id
-      client.doCreate('Potentials', pot, function(e,r,body){tel.write('POT created: ' + pot.potentialname + '\n> ')});
+      client.doCreate('Potentials', pot, function(e,r,body){
+        tel.write('POT created: ' + r.potential_no+'\n')
+        try {
+          preamble = '/home/simon/CAD/'+contact.lastname+'/'+r.potential_no+' '+r.potentialname
+          fs.mkdirParent(preamble+'/Operations');
+          fs.mkdirParent(preamble+'/Operations/CAD Files');
+          fs.mkdirParent(preamble+'/Operations/Files from Client');
+          fs.mkdirParent(preamble+'/Operations/POs to Vendor');
+          fs.mkdirParent(preamble+'/Operations/Quotes from Vendor');
+          fs.mkdirParent(preamble+'/Operations/Released');
+          fs.mkdirParent(preamble+'/Sales');
+          fs.mkdirParent(preamble+'/Sales/Files from Client');
+          fs.mkdirParent(preamble+'/Sales/Invoices to Client');
+          fs.mkdirParent(preamble+'/Sales/POs from Client');
+          fs.mkdirParent(preamble+'/Sales/Quotes to Client');
+          fs.mkdirParent(preamble+'/Sales/SOs to Client');
+          tel.write('Created directory structure')
+        } catch (err){
+          tel.write('Failed to create file structure: ' + err);
+        }
+        tel.write('\n> ')
+      });
     });
   });
 }
@@ -196,3 +219,18 @@ function importV(form){
   pair.contact = contact
   rclient.rpush('pots', JSON.stringify(pair), function(){console.log('POT saved: ' + pot.potentialname)});
 }
+
+fs.mkdirParent = function(dirPath, mode, callback) {
+  //Call the standard fs.mkdir
+  fs.mkdir(dirPath, mode, function(error) {
+    //When it fail in this way, do the custom steps
+    if (error && error.errno === 34) {
+      //Create all the parents recursively
+      fs.mkdirParent(path.dirname(dirPath), mode, callback);
+      //And then the directory
+      fs.mkdirParent(dirPath, mode, callback);
+    }
+    //Manually run the callback since we used our own callback to do all these
+    callback && callback(error);
+  });
+};
