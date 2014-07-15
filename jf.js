@@ -31,14 +31,15 @@ var map = {
     'description': 'q6_projectDescription',
     'cf_1067': 'q9_projectX',
     //'cf_979': 'q10_preferredMaterial',
-    'cf_1069': 'q14_projectPurpose',
+    'cf_1069': 'q14_projectPurpose14',
     'cf_1065': 'q11_materialVolume',
-    'cf_981': 'q15_quantity',
+    'cf_981': 'q15_quantity15',
     //'cf_1265': 'q21_preferredMaterial21',
     },
   'contact': {
     'email': 'q4_email4',
     'phone': 'q7_phoneNumber7',
+    'cf_1249': 'q17_companyName',
   },
 }
 
