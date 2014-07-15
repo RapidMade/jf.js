@@ -192,6 +192,7 @@ function examine(command, tel) {
     tel.write('Volume: ' + pot.cf_1065+'\n');
     tel.write('Contact name: ' + contact.firstname + ' ' + contact.lastname+'\n');
     tel.write('Contact email: ' + contact.email+'\n');
+    tel.write('Contact company: ' + contact.cf_1249+'\n');
     tel.write('> ')
   });
 }
