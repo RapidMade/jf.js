@@ -8,6 +8,7 @@ var redis        = require('redis');
 var multiline    = require('multiline');
 var fs           = require('fs');
 var path         = require('path');
+var moment       = require('moment');
 
 rclient = redis.createClient();
 // Some settings
@@ -153,6 +154,7 @@ function importW(command, tel) {
           fs.mkdirParent(preamble+'/Operations');
           fs.mkdirParent(preamble+'/Operations/CAD Files');
           fs.mkdirParent(preamble+'/Operations/Files from Client');
+          fs.mkdirParent(preamble+'/Operations/Files from Client/'+pot.yymmdd);
           fs.mkdirParent(preamble+'/Operations/POs to Vendor');
           fs.mkdirParent(preamble+'/Operations/Quotes from Vendor');
           fs.mkdirParent(preamble+'/Operations/Released');
@@ -216,6 +218,7 @@ function importV(form){
   if(form['q20_preferredMaterial20']) {
     pot.cf_1265 = form['q20_preferredMaterial20'].replace(new RegExp(', ', 'g'), ' |##| ');
   }
+  pot.yymmdd = moment().format('YYMMDD');
   pair = {}
   pair.pot = pot
   pair.contact = contact
