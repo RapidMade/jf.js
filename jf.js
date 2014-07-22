@@ -12,10 +12,10 @@ var moment       = require('moment');
 
 rclient = redis.createClient();
 // Some settings
-VT_URL          = 'https://rapidmade.od1.vtiger.com'
-VT_USER         = 'dshapiro@rapidmade.com'
-VT_ACCESSKEY    = '***REMOVED***' 
-HTTP_SECRET     = '***REMOVED***'
+VT_URL          = config.url
+VT_USER         = config.user
+VT_ACCESSKEY    = config.key
+HTTP_SECRET     = config.secret
 
 // Set defaults here
 var defaultcontact = {
