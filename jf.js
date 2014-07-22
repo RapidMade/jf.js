@@ -195,7 +195,8 @@ function importPOT(tel, pot, r, contact) {
         fs.mkdirParent(preamble+'/Sales/POs from Client');
         fs.mkdirParent(preamble+'/Sales/Quotes to Client');
         fs.mkdirParent(preamble+'/Sales/SOs to Client');
-        wrench.chownSyncRecursive("preamble", uid, gid);
+        wrench.chmodSyncRecursive(preamble+'/..', 0666);
+        wrench.chownSyncRecursive(preamble+'/..', 544, 513);
         tel.write('Created directory structure')
       } catch (err){
         tel.write('Failed to create file structure: ' + err);
