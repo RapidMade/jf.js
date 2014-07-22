@@ -9,6 +9,10 @@ var multiline    = require('multiline');
 var fs           = require('fs');
 var path         = require('path');
 var moment       = require('moment');
+var wrench       = require('wrench');
+var util         = require('util');
+
+var config = require('./config')
 
 rclient = redis.createClient();
 // Some settings
@@ -191,6 +195,7 @@ function importPOT(tel, pot, r, contact) {
         fs.mkdirParent(preamble+'/Sales/POs from Client');
         fs.mkdirParent(preamble+'/Sales/Quotes to Client');
         fs.mkdirParent(preamble+'/Sales/SOs to Client');
+        wrench.chownSyncRecursive("preamble", uid, gid);
         tel.write('Created directory structure')
       } catch (err){
         tel.write('Failed to create file structure: ' + err);
@@ -253,15 +258,12 @@ function importV(form){
 
 fs.mkdirParent = function(dirPath, mode, callback) {
   //Call the standard fs.mkdir
-  fs.mkdir(dirPath, mode, function(error) {
-    //When it fail in this way, do the custom steps
-    if (error && error.errno === 34) {
-      //Create all the parents recursively
-      fs.mkdirParent(path.dirname(dirPath), mode, callback);
-      //And then the directory
-      fs.mkdirParent(dirPath, mode, callback);
-    }
-    //Manually run the callback since we used our own callback to do all these
-    callback && callback(error);
-  });
-};
+  fs.mkdirSync(dirPath, mode)
+  //When it fail in this way, do the custom steps
+  if (error && error.errno === 34) {
+    //Create all the parents recursively
+    fs.mkdirParent(path.dirname(dirPath), mode, callback);
+    //And then the directory
+    fs.mkdirParent(dirPath, mode, callback);
+  }
+}
