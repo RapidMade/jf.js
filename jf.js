@@ -259,12 +259,15 @@ function importV(form){
 
 fs.mkdirParent = function(dirPath, mode, callback) {
   //Call the standard fs.mkdir
+  try {
   fs.mkdirSync(dirPath, mode)
-  //When it fail in this way, do the custom steps
-  if (error && error.errno === 34) {
-    //Create all the parents recursively
-    fs.mkdirParent(path.dirname(dirPath), mode, callback);
-    //And then the directory
-    fs.mkdirParent(dirPath, mode, callback);
+  } catch (error){
+    //When it fail in this way, do the custom steps
+    if (error && error.errno === 34) {
+      //Create all the parents recursively
+      fs.mkdirParent(path.dirname(dirPath), mode, callback);
+      //And then the directory
+      fs.mkdirParent(dirPath, mode, callback);
+    }
   }
 }
