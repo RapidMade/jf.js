@@ -144,41 +144,59 @@ function importW(command, tel) {
   rclient.lrange('pots', command[1], command[1], function(err, raw){
     pot = JSON.parse(raw[0]).pot;
     contact = JSON.parse(raw[0]).contact;
-    client.doCreate('Contacts', contact, function(e,r,body){
-      tel.write('Contact created: ' + contact.firstname + ' ' + contact.lastname + '\n');
-      pot.contact_id = r.id
-      client.doCreate('Potentials', pot, function(e,r,body){
-        if(e) {
-          tel.write(e)
-        } else {
-          tel.write('POT created: ' + r.potential_no+'\n')
-          try {
-            if(contact.cf_1249) {
-              preamble = '/mnt/r/RM Clients/'+contact.cf_1249+' - '+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
-            } else {
-              preamble = '/mnt/r/RM Clients/'+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
-            }
-            fs.mkdirParent(preamble+'/Operations');
-            fs.mkdirParent(preamble+'/Operations/CAD Files');
-            fs.mkdirParent(preamble+'/Operations/Files from Client');
-            fs.mkdirParent(preamble+'/Operations/Files from Client/'+pot.yymmdd);
-            fs.mkdirParent(preamble+'/Operations/POs to Vendor');
-            fs.mkdirParent(preamble+'/Operations/Quotes from Vendor');
-            fs.mkdirParent(preamble+'/Operations/Released');
-            fs.mkdirParent(preamble+'/Sales');
-            fs.mkdirParent(preamble+'/Sales/Files from Client');
-            fs.mkdirParent(preamble+'/Sales/Invoices to Client');
-            fs.mkdirParent(preamble+'/Sales/POs from Client');
-            fs.mkdirParent(preamble+'/Sales/Quotes to Client');
-            fs.mkdirParent(preamble+'/Sales/SOs to Client');
-            tel.write('Created directory structure')
-          } catch (err){
-            tel.write('Failed to create file structure: ' + err);
-          }
-        }
-        tel.write('\n> ')
+    if(command[2] != '--match-contact'){
+      client.doCreate('Contacts', contact, function(e,r,body){
+        tel.write('Contact created: ' + contact.firstname + ' ' + contact.lastname + '\n');
+        importPOT(tel,pot,r,contact)
       });
-    });
+    } else {
+      client.doQuery("select * from Contacts where lastname='"+contact.lastname+"' and firstname='"+contact.firstname+"';", function(e,r){
+        if(r){
+          r = r[0]
+          tel.write('Contact found: ' + r.id + '\n');
+          importPOT(tel,pot,r,contact)
+        } else {
+          tel.write('Could not find a contact named ' + contact.firstname + ' ' + contact.lastname + '\n')
+          tel.write('\n> ')
+        }
+      });
+    }
+  });
+}
+
+function importPOT(tel, pot, r, contact) {
+  pot.contact_id = r.id
+  contact.cf_1249 = r.cf_1249
+  client.doCreate('Potentials', pot, function(e,r,body){
+    if(e) {
+      tel.write(e)
+    } else {
+      tel.write('POT created: ' + r.potential_no+'\n')
+      try {
+        if(contact.cf_1249) {
+          preamble = '/mnt/r/RM Clients/'+contact.cf_1249+' - '+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
+        } else {
+          preamble = '/mnt/r/RM Clients/'+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
+        }
+        fs.mkdirParent(preamble+'/Operations');
+        fs.mkdirParent(preamble+'/Operations/CAD Files');
+        fs.mkdirParent(preamble+'/Operations/Files from Client');
+        fs.mkdirParent(preamble+'/Operations/Files from Client/'+pot.yymmdd);
+        fs.mkdirParent(preamble+'/Operations/POs to Vendor');
+        fs.mkdirParent(preamble+'/Operations/Quotes from Vendor');
+        fs.mkdirParent(preamble+'/Operations/Released');
+        fs.mkdirParent(preamble+'/Sales');
+        fs.mkdirParent(preamble+'/Sales/Files from Client');
+        fs.mkdirParent(preamble+'/Sales/Invoices to Client');
+        fs.mkdirParent(preamble+'/Sales/POs from Client');
+        fs.mkdirParent(preamble+'/Sales/Quotes to Client');
+        fs.mkdirParent(preamble+'/Sales/SOs to Client');
+        tel.write('Created directory structure')
+      } catch (err){
+        tel.write('Failed to create file structure: ' + err);
+      }
+    }
+    tel.write('\n> ')
   });
 }
 
