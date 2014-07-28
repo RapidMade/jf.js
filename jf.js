@@ -195,7 +195,7 @@ function importPOT(tel, pot, r, contact) {
         fs.mkdirParent(preamble+'/Sales/POs from Client');
         fs.mkdirParent(preamble+'/Sales/Quotes to Client');
         fs.mkdirParent(preamble+'/Sales/SOs to Client');
-        wrench.chmodSyncRecursive(preamble+'/..', 0666);
+        wrench.chmodSyncRecursive(preamble+'/..', 0700);
         wrench.chownSyncRecursive(preamble+'/..', 544, 513);
         tel.write('Created directory structure')
       } catch (err){
