@@ -9,7 +9,7 @@ var multiline    = require('multiline');
 var fs           = require('fs');
 var path         = require('path');
 var moment       = require('moment');
-var wrench       = require('wrench');
+var mkdirp       = require('mkdirp');
 var util         = require('util');
 
 var config = require('./config')
@@ -182,21 +182,19 @@ function importPOT(tel, pot, r, contact) {
         } else {
           preamble = '/mnt/r/RM Clients/'+contact.firstname + ' ' + contact.lastname+'/'+r.potential_no+' '+r.potentialname
         }
-        fs.mkdirParent(preamble+'/Operations');
-        fs.mkdirParent(preamble+'/Operations/CAD Files');
-        fs.mkdirParent(preamble+'/Operations/Files from Client');
-        fs.mkdirParent(preamble+'/Operations/Files from Client/'+pot.yymmdd);
-        fs.mkdirParent(preamble+'/Operations/POs to Vendor');
-        fs.mkdirParent(preamble+'/Operations/Quotes from Vendor');
-        fs.mkdirParent(preamble+'/Operations/Released');
-        fs.mkdirParent(preamble+'/Sales');
-        fs.mkdirParent(preamble+'/Sales/Files from Client');
-        fs.mkdirParent(preamble+'/Sales/Invoices to Client');
-        fs.mkdirParent(preamble+'/Sales/POs from Client');
-        fs.mkdirParent(preamble+'/Sales/Quotes to Client');
-        fs.mkdirParent(preamble+'/Sales/SOs to Client');
-        wrench.chmodSyncRecursive(preamble+'/..', 0700);
-        wrench.chownSyncRecursive(preamble+'/..', 544, 513);
+        mkdirp.sync(preamble+'/Operations');
+        mkdirp.sync(preamble+'/Operations/CAD Files');
+        mkdirp.sync(preamble+'/Operations/Files from Client');
+        mkdirp.sync(preamble+'/Operations/Files from Client/'+pot.yymmdd);
+        mkdirp.sync(preamble+'/Operations/POs to Vendor');
+        mkdirp.sync(preamble+'/Operations/Quotes from Vendor');
+        mkdirp.sync(preamble+'/Operations/Released');
+        mkdirp.sync(preamble+'/Sales');
+        mkdirp.sync(preamble+'/Sales/Files from Client');
+        mkdirp.sync(preamble+'/Sales/Invoices to Client');
+        mkdirp.sync(preamble+'/Sales/POs from Client');
+        mkdirp.sync(preamble+'/Sales/Quotes to Client');
+        mkdirp.sync(preamble+'/Sales/SOs to Client');
         tel.write('Created directory structure')
       } catch (err){
         tel.write('Failed to create file structure: ' + err);
@@ -255,19 +253,4 @@ function importV(form){
   pair.pot = pot
   pair.contact = contact
   rclient.rpush('pots', JSON.stringify(pair), function(){console.log('POT saved: ' + pot.potentialname)});
-}
-
-fs.mkdirParent = function(dirPath, mode, callback) {
-  //Call the standard fs.mkdir
-  try {
-  fs.mkdirSync(dirPath, mode)
-  } catch (error){
-    //When it fail in this way, do the custom steps
-    if (error && error.errno === 34) {
-      //Create all the parents recursively
-      fs.mkdirParent(path.dirname(dirPath), mode, callback);
-      //And then the directory
-      fs.mkdirParent(dirPath, mode, callback);
-    }
-  }
 }
